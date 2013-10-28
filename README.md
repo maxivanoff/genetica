@@ -1,13 +1,19 @@
-genetica - Python library for minimization of a function using genetic algorithms in parallel.
+genetica 
+========
+Python library for minimization of a function using genetic algorithms in parallel.
+--------
 
-Author: Maxim Ivanov\n
-Email: maxim.ivanov@marquette.edu\n
+Author: Maxim Ivanov
 
-requirements:
-mpi4py - MPI parallelization
-matplotlib - graphical representation of results
+Email: maxim.ivanov@marquette.edu
 
-content:
+Requirements:
+
+* mpi4py - MPI parallelization
+* matplotlib - graphical representation of results
+
+Content:
+
 Environment.py - sets the general structure of the algorithm
 Population.py - defines properties of a populations
 Individual.py - defines properties of an individual chromosome
