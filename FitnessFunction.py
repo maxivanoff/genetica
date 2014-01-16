@@ -57,7 +57,7 @@ class GeneralFitnessFunction(object):
     
     def __init__(self):
         self.score = None
-
+    
     def get_score(self, chromosome):
         return self.score
    

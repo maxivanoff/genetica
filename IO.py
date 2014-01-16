@@ -3,7 +3,7 @@ import numpy
 
 class Output(object):
 
-    def __init__(self, problem_name, var_ranges):
+    def __init__(self, problem_name, var_ranges, maxgenerations, size, crossrate, mutrate):
         self.problem_name = problem_name
         self.var_ranges = var_ranges ## dictionary, it has names of variables
         if not os.path.exists('./output'):
@@ -14,7 +14,21 @@ class Output(object):
             os.system('mkdir %s' % (self.MainOutputDir))
         else:
             os.system('mkdir %s' % (self.MainOutputDir))
+        self.dump_info(maxgenerations, size, crossrate, mutrate)
 
+    def dump_info(self, maxgen, size, crossrate, mutrate):
+        infofile = open('%s/info' % (self.MainOutputDir), 'w')
+        s = 'Maximum generations: %i\n' % (maxgen)
+        infofile.write(s)
+        s = 'Population size: %i\n' % (size)
+        infofile.write(s)
+        s = 'Crossover rate: %.3f\n' % (crossrate)
+        infofile.write(s)
+        s = 'Mutation rate: %.3f\n' % (mutrate)
+        infofile.write(s)
+        infofile.close()
+
+    
     def open_logfiles(self, i):
         self.statsfile = open('%s/stats' % (self.MainOutputDir), 'w')
         self.OutputDirName = '%s/%i' % (self.MainOutputDir, i)

@@ -37,7 +37,8 @@ class Population(object):
             self.deviations[var_name] = numpy.std(values)
      
     def mutation(self, individual):
-        if random() < self.mutation_rate:
+        rnd_mut = random()
+        if rnd_mut < self.mutation_rate:
             individual.mutation()
         else:
             pass # no mutation
@@ -45,11 +46,6 @@ class Population(object):
     def evolve(self):
         next_population = []
         self.individuals.sort()
-        #print 'before:'
-        #print self.individuals[0].chromosome
-        #print self.individuals[0].bin_chromosome
-        #print self.individuals[0].score
-        #print [individ.score for individ in self.individuals]
         best_chromosome = self.individuals[0].copy()
         next_population.append(deepcopy(best_chromosome)) #save best chromosome
         while len(next_population) < self.size:
@@ -63,11 +59,6 @@ class Population(object):
             self.mutation(offspring)
             next_population.append(offspring)
         self.individuals = next_population
-        #print 'after'
-        #print self.individuals[0].chromosome
-        #print self.individuals[0].bin_chromosome
-        #print self.individuals[0].score
-        #print [individ.score for individ in self.individuals]
 
     def select(self, selection_type = 'Proportional Selection'):
         if selection_type == 'Proportional Selection':

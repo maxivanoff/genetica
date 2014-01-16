@@ -1,7 +1,7 @@
 
 class Environment(object):
 
-    def __init__(self, var_ranges=None, size=None, maxgenerations=None, threshold=None, conv_gen=None, crossover_rate=None, mutation_rate=None, num_cycles=None,  Individual=None, Population=None, fitness=None, output=None):
+    def __init__(self, var_ranges=None, size=None, maxgenerations=None, threshold=None, conv_gen=None, crossover_rate=None, mutation_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
         self.var_ranges = var_ranges
         self.size = size
         self.maxgenerations = maxgenerations
