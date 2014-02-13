@@ -1,7 +1,9 @@
 
 class Environment(object):
 
-    def __init__(self, var_ranges=None, size=None, maxgenerations=None, threshold=None, conv_gen=None, crossover_rate=None, mutation_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
+    def __init__(self, objectives=None, var_ranges=None, size=None, maxgenerations=None, threshold=None, conv_gen=None, crossover_rate=None, mutation_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
+        self.objectives = objectives
+        self.num_objectives = len(objectives)
         self.var_ranges = var_ranges
         self.size = size
         self.maxgenerations = maxgenerations
@@ -20,9 +22,8 @@ class Environment(object):
         self.output = output
 
     def initialize_population(self):
-        self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges)
+        self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.num_objectives)
         self.fitness.calculation(self.population.individuals) #fitness function calculation for 0 generation
-        self.population.individuals.sort()
         self.population.collect_statistics() # averaging
         self.report() # write data to logfiles
     
@@ -41,7 +42,9 @@ class Environment(object):
             self.step() # single GA iteration
         self.num_generations.append(self.generation)
         self.times.append(self.population.time)
-        self.best_individuals.append(self.population.individuals[0])
+        elite = self.population.save_elite()
+        for best in elite:
+            self.best_individuals.append(best)
         self.last_best_scores = []
 
     def goal_reached(self):
@@ -56,7 +59,8 @@ class Environment(object):
         return self.check_convergence()
         
     def check_convergence(self):
-        score = self.population.individuals[0].score # best score
+        self.individuals.sort()
+        score = self.population.individuals[0].score() # best score
         diff = []
         if self.generation < self.conv_gen:
             self.last_best_scores.append(score)
@@ -74,12 +78,11 @@ class Environment(object):
     def step(self): # algorithm itself
         self.population.evolve() # select, breed, mutate => new generation
         self.fitness.calculation(self.population.individuals) # fitness function calculation of next gen
-        self.population.individuals.sort() # sort population; first in the list is the best
         self.population.collect_statistics() # averaging
         self.report() # write data to logfiles
         self.generation += 1
 
     def report(self): # this is done each generation
-        self.output.write_log(self.population.individuals[0], self.generation, self.population.deviations, self.population.averages, self.population.time)
+        self.output.write_log(self.population.elite, self.generation, self.population.deviations, self.population.averages, self.population.time)
 
 

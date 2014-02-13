@@ -3,11 +3,17 @@ from math import log
 
 class Individual(object):
 
-    def __init__(self):
+    def __init__(self, num_objectives):
         self.chromosome = {}
-        self.score = None # total fitness function value Fi
+        self.objectives = [] # list of objective values
         self.weight = None # for selection operator
         self.optimization = 'minimization'
+        self.num_objectives = num_objectives
+        self.rank = None # Pareto Front Rank in multiobjective optimization
+        if num_objectives == 1: self.score = self.first_objective
+        else: # multiobjective optimization 
+            self.score = self.rank_objective
+        
 
     def make_chromosome(self):
         pass
@@ -18,16 +24,36 @@ class Individual(object):
     def mutation(self):
         pass
 
+    def first_objective(self):
+        return self.objectives[0]
 
+    def rank_objective(self):
+        return self.rank
+    
+    def dominate(self, other):
+        a = False
+        for i in range(self.num_objectives):
+            if self.objectives[i] < other.objectives[i]: return False
+            if self.objectives[i] > other.objectives[i]: a = True
+        return a
+
+   # def __eq__(self, other):
+   #     a = False
+   #     for i in range(self.num_objectives):
+   #         if self.objectives[i] == other.objectives[i]: a = True
+   #         else: return False
+   #     return a
+        
+    
     def __cmp__(self, other):
         if self.optimization == 'minimization':
-            return cmp(self.score, other.score)
+            return cmp(self.score(), other.score())
         if self.optimization == 'maximization':
-            return cmp(other.score, self.score)
+            return cmp(other.score(), self.score())
 
 class BinaryCoded(Individual):
-    def __init__(self, var_ranges):
-        Individual.__init__(self)
+    def __init__(self, var_ranges, num_objectives):
+        Individual.__init__(self, num_objectives)
         self.var_ranges = var_ranges
         self.var_names = [name for name in self.var_ranges]
         self.accuracy = 3
@@ -89,12 +115,14 @@ class BinaryCoded(Individual):
         twin.bin_chromosome = self.bin_chromosome
         twin.score = self.score
         twin.weight = self.weight
+        twin.objectives = self.objectives
+        twin.rank = self.rank
         return twin
 
 class RealCoded(Individual):
 
-    def __init__(self, gene_ranges):
-        Individual.__init__(self)
+    def __init__(self, gene_ranges, num_objectives):
+        Individual.__init__(self, num_objectives)
         self.gene_ranges = gene_ranges # dictionary
         self.gene_names = [name for name in self.gene_ranges]
         self.make_chromosome()
@@ -153,7 +181,8 @@ class RealCoded(Individual):
     def copy(self): # makes copy of individual
         twin = self.__class__(self.gene_ranges)
         twin.chromosome = self.chromosome
-        twin.score = self.score
+        twin.objectives = self.objectives
+        twin.rank = self.rank
         twin.weight = self.weight
         return twin
  
