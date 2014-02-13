@@ -108,12 +108,11 @@ class RealCoded(Individual):
     
     def adjust_ranges(self):#adjust genes to given ranges
         for name in self.gene_names:
-            gene = self.chromosome[name] # this doesnt work! change? no?
             ranges = self.gene_ranges[name]
-            if gene > ranges[1]:
-                gene = ranges[1]
-            if gene < ranges[0]:
-                gene = ranges[0]
+            if self.chromosome[name] > ranges[1]:
+                self.chromosome[name] = ranges[1]
+            if self.chromosome[name] < ranges[0]:
+                self.chromosome[name] = ranges[0]
 
     def crossover(self, other, crossover_type='BLXa'):
         child = self.__class__(self.gene_ranges)
@@ -135,7 +134,7 @@ class RealCoded(Individual):
             UpLim = Cmax + I*alpha
             DownLim = Cmin - I*alpha
             child.chromosome[name] = DownLim + (UpLim - DownLim)*random()
-        #child.adjust_ranges()
+        child.adjust_ranges()
         return child
 
     def flat_crossover(self, other, child):
