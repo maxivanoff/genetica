@@ -3,10 +3,6 @@ genetica
 Python library for minimization of a function using genetic algorithms in parallel.
 ---
 
-Author: Maxim Ivanov
-
-Email: maxim.ivanov@marquette.edu
-
 Requirements:
 * mpi4py - MPI parallelization
 * matplotlib - graphical representation of results
