@@ -22,8 +22,9 @@ class Environment(object):
         self.output = output
 
     def initialize_population(self):
-        self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.num_objectives)
+        self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.objectives)
         self.fitness.calculation(self.population.individuals) #fitness function calculation for 0 generation
+        self.population.assign_ranks()
         self.population.collect_statistics() # averaging
         self.report() # write data to logfiles
     
@@ -78,6 +79,7 @@ class Environment(object):
     def step(self): # algorithm itself
         self.population.evolve() # select, breed, mutate => new generation
         self.fitness.calculation(self.population.individuals) # fitness function calculation of next gen
+        self.assign_ranks()
         self.population.collect_statistics() # averaging
         self.report() # write data to logfiles
         self.generation += 1

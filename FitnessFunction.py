@@ -56,10 +56,10 @@ class MPIdistribution(object):
 class GeneralFitnessFunction(object):
     
     def __init__(self):
-        self.score = None
+        self.objectives = []
     
     def get_score(self, chromosome):
-        return self.score
+        return self.objectives
    
 class ParallelFitness(MPIdistribution, GeneralFitnessFunction):
 
@@ -85,5 +85,5 @@ class ParallelFitness(MPIdistribution, GeneralFitnessFunction):
             rcvd_results = self.comm.recv(source=proc, tag=proc)
             for i in range(self.TasksPerProc):
                 individual = individuals[proc*self.TasksPerProc + i]
-                individual.score = rcvd_results[i]
+                individual.objectives = rcvd_results[i]
 

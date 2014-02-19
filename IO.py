@@ -33,27 +33,35 @@ class Output(object):
         self.statsfile = open('%s/stats' % (self.MainOutputDir), 'w')
         self.OutputDirName = '%s/%i' % (self.MainOutputDir, i)
         os.system('mkdir %s' % (self.OutputDirName) )
-        self.outfile = open('%s/log' % (self.OutputDirName,),'w')
+        self.conv_log = open('%s/convergence.log' % (self.OutputDirName,),'w')
+        self.stats_log = open('%s/statistics.log' % (self.OutputDirName,),'w')
         self.write_header() # line with titles in outfile
 
-    def write_log(self, best, generation, deviations, averages, time):
+    def write_log(self, elite, generation, deviations, averages, time):
+        # elite is the first pareto front
         prms = ''
-        reportstr = '%i %.8f ' % (generation, best.score)
+        # report best solution(s) at the current generation
+        for individ in elite:
+            reportstr = '%i ' % (generation)
+            # report objective values
+            for objective in individ.objectives:
+                reportstr += '%.8f ' % (objective)
+            # report variables values
+            for var_name in self.var_ranges:
+                value = individ.chromosome[var_name]
+                reportstr += '%.4f ' % (value)
+            reportstr += '\n'
+        self.cov_log.write(reportstr)
+        # report stats at the current generation
+        reportstr = '%i ' % (generation)
+        for objective in self.objectives:
+            reportstr += '%.8f ' % (averages[objective])
+            reportstr += '%.8f ' % (deviations[objective])
         for var_name in self.var_ranges:
-            value = best.chromosome[var_name]
-            prms += '%.4f ' % (value)
-        reportstr += prms + '%.8f ' % (averages['score'])
-        prms = ''
-        for var_name in self.var_ranges:
-            value = averages[var_name]
-            prms += '%.4f ' % (value)
-        reportstr += prms + '%.8f ' % (deviations['score'])
-        prms = ''
-        for var_name in self.var_ranges:
-            value = deviations[var_name]
-            prms += '%.4f ' % (value)
-        reportstr += prms + '%.1f\n' % (time)
-        self.outfile.write(reportstr)
+            reportstr += '%.4f ' % (averages[var_name])
+            reportstr += '%.4f ' % (deviations[var_name])
+        reportstr += '%.1f\n' % (time)
+        self.stats_log.write(reportstr)
 
     def write_header(self):
         reportstr = 'gen best_score  '

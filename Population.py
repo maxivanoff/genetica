@@ -1,11 +1,11 @@
 import numpy
 import time
-from random import random, uniform, choice
+import random
 from copy import deepcopy
 
 class Population(object):
 
-    def __init__(self, individual=None, size=None, crossover_rate=None, mutation_rate=None, var_ranges=None, num_objectives=None):
+    def __init__(self, individual=None, size=None, crossover_rate=None, mutation_rate=None, var_ranges=None, objectives=None):
         self.individual = individual
         self.size = size
         self.crossover_rate = crossover_rate
@@ -15,8 +15,10 @@ class Population(object):
         self.averages = {}
         self.deviations = {}
         self.time = None
-        self.num_objectives = num_objectives
+        self.objectives = objectives
+        self.num_objectives = len(objectives)
         self.elite = None
+        self.last_rank = None
         self.starting_time = time.time()
 
     def make_population(self):
@@ -24,24 +26,19 @@ class Population(object):
 
     def collect_statistics(self):
         self.time = time.time()-self.starting_time
-        self.assign_ranks()
-        # defines weights for proportional selection
-        scores = [individ.score() for individ in self.individuals]
-        total_score = numpy.sum(scores)
-        for i in range(self.size):
-            self.individuals[i].weight = self.individuals[i].score()/total_score
-        # convergence data for single objective
-        if self.num_objectives == 1:
-            self.deviations['score'] = numpy.std(scores)
-            self.averages['score'] = numpy.average(scores)
-            for var_name in self.var_ranges:
-                values = []
-                for individ in self.individuals:
-                    value = individ.chromosome[var_name]
-                    values.append(value)
-                self.averages[var_name] = numpy.average(values)
-                self.deviations[var_name] = numpy.std(values)
-         
+        # stats for objectives
+        obj = 0
+        for objective in self.objectives:
+            scores = [individ.objectives[obj] for individ in self.individuals]
+            self.deviations[objective] = numpy.std(scores)
+            self.averages[objective] = numpy.average(scores)
+            obj += 1
+        # stats for variables
+        for var_name in self.var_ranges:
+            values = [individ.chromosome[var_name] for individ in self.individuals]
+            self.averages[var_name] = numpy.average(values)
+            self.deviations[var_name] = numpy.std(values)
+     
     def mutation(self, individual):
         rnd_mut = random()
         if rnd_mut < self.mutation_rate:
@@ -72,6 +69,7 @@ class Population(object):
                 individ.rank = rank
                 tmp_population.remove(individ)
             rank += 1
+        self.last_rank = rank
 
     def save_elite(self):
         elite = []
@@ -104,11 +102,11 @@ class Population(object):
 
     def proportional_selection(self):
         competitors=[]
-        k=uniform(self.individuals[0].weight, self.individuals[-1].weight)
-        for i in range(self.size):
-            if self.individuals[i].weight<=k:
-                competitors.append(self.individuals[i])
-        return choice(competitors)
+        rndm_rank = random.randint(1, self.last_rank)
+        for individ in self.individuals:
+            if individ.rank <= rndm_rank:
+                competitors.append(individ)
+        return random.choice(competitors)
 
     def tournament(self, size=8, choosebest=0.90):
         competitors = [choice(self.individuals) for i in range(size)]

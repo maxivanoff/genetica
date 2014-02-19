@@ -9,6 +9,9 @@ rank = comm.Get_rank()
 
 problem_name = 'canyon'
 
+# Objectives
+objectives = ['objective1', 'objective2']
+
 # GA settings
 size=21 #population size
 num_cycles=1000 # number of GA cycles
@@ -32,7 +35,7 @@ fitness = Fitness(problem_name, comm=comm, size=size)
 
 if rank==0:
     output = ioo.Output(problem_name_tmp, var_ranges) 
-    env = Environment.Environment(var_ranges, size, max_gen, threshold, conv_gen, cross_rate, mutation_rate, num_cycles,  Individual.RealCoded, Population.Population, fitness, output)
+    env = Environment.Environment(objectives, var_ranges, size, max_gen, threshold, conv_gen, cross_rate, mutation_rate, num_cycles,  Individual.RealCoded, Population.Population, fitness, output)
     env.run()
 else:
     fitness.slaves_work()

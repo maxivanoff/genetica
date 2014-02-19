@@ -6,14 +6,9 @@ class Individual(object):
     def __init__(self, num_objectives):
         self.chromosome = {}
         self.objectives = [] # list of objective values
-        self.weight = None # for selection operator
         self.optimization = 'minimization'
         self.num_objectives = num_objectives
-        self.rank = None # Pareto Front Rank in multiobjective optimization
-        if num_objectives == 1: self.score = self.first_objective
-        else: # multiobjective optimization 
-            self.score = self.rank_objective
-        
+        self.rank = None # Pareto Front Rank
 
     def make_chromosome(self):
         pass
@@ -24,17 +19,11 @@ class Individual(object):
     def mutation(self):
         pass
 
-    def first_objective(self):
-        return self.objectives[0]
-
-    def rank_objective(self):
-        return self.rank
-    
     def dominate(self, other):
         a = False
-        for i in range(self.num_objectives):
-            if self.objectives[i] < other.objectives[i]: return False
-            if self.objectives[i] > other.objectives[i]: a = True
+        for i in range(self.num_objectives): # smaller means better
+            if self.objectives[i] > other.objectives[i]: return False
+            if self.objectives[i] < other.objectives[i]: a = True
         return a
 
    # def __eq__(self, other):
@@ -47,9 +36,9 @@ class Individual(object):
     
     def __cmp__(self, other):
         if self.optimization == 'minimization':
-            return cmp(self.score(), other.score())
+            return cmp(self.rank, other.rank)
         if self.optimization == 'maximization':
-            return cmp(other.score(), self.score())
+            return cmp(other.rank, self.rank)
 
 class BinaryCoded(Individual):
     def __init__(self, var_ranges, num_objectives):
@@ -113,8 +102,6 @@ class BinaryCoded(Individual):
         twin = self.__class__(self.var_ranges)
         twin.chromosome = self.chromosome
         twin.bin_chromosome = self.bin_chromosome
-        twin.score = self.score
-        twin.weight = self.weight
         twin.objectives = self.objectives
         twin.rank = self.rank
         return twin
@@ -183,7 +170,6 @@ class RealCoded(Individual):
         twin.chromosome = self.chromosome
         twin.objectives = self.objectives
         twin.rank = self.rank
-        twin.weight = self.weight
         return twin
  
 
