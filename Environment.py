@@ -39,42 +39,14 @@ class Environment(object):
     def run_cycle(self):
         self.generation = 0
         self.initialize_population()
-        while not self.goal_reached():
+        while not self.too_many_generations():
             self.step() # single GA iteration
         self.num_generations.append(self.generation)
         self.times.append(self.population.time)
-        elite = self.population.save_elite()
-        for best in elite:
-            self.best_individuals.append(best)
-        self.last_best_scores = []
-
-    def goal_reached(self):
-        goal = self.converged() or self.too_many_generations()
-        return goal
-
+        self.best_individuals += self.population.elite
 
     def too_many_generations(self):
         return self.generation > self.maxgenerations
-
-    def converged(self):
-        return self.check_convergence()
-        
-    def check_convergence(self):
-        self.individuals.sort()
-        score = self.population.individuals[0].score() # best score
-        diff = []
-        if self.generation < self.conv_gen:
-            self.last_best_scores.append(score)
-            return False
-        else:
-            for prev_score in self.last_best_scores:
-                diff.append(abs(prev_score - score))
-            for d in diff:
-                if d > self.threshold:
-                    self.last_best_scores.pop(0)
-                    self.last_best_scores.append(score)
-                    return False
-            return True
     
     def step(self): # algorithm itself
         self.population.evolve() # select, breed, mutate => new generation
@@ -85,6 +57,7 @@ class Environment(object):
         self.generation += 1
 
     def report(self): # this is done each generation
-        self.output.write_log(self.population.elite, self.generation, self.population.deviations, self.population.averages, self.population.time)
+        elite = self.population.save_elite()
+        self.output.write_log(elite, self.generation, self.population.deviations, self.population.averages, self.population.time)
 
 

@@ -1,47 +1,102 @@
 import os
+import csv
 import numpy
+try:
+    import matplotlib.pyplot as plt
+except:
+    plt = False
 
 class Output(object):
 
-    def __init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate):
+    def __init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate, graphics):
+        if plt and graphics: self.graphics = True
+        else: self.graphics = False
         self.problem_name = problem_name
         self.objectives = objectives
         self.num_objectives = len(num_objectives)
         self.var_ranges = var_ranges ## dictionary, it has names of variables
         if not os.path.exists('./output'):
             os.system('mkdir ./output')
-        self.MainOutputDir = './output/%s' % (self.problem_name)
-        if os.path.exists(self.MainOutputDir):
-            os.system('rm -r %s' % (self.MainOutputDir))
-        os.system('mkdir %s' % (self.MainOutputDir))
-        
+        self.main_output = './output/%s' % (self.problem_name)
+        if os.path.exists(self.main_output):
+            os.system('rm -r %s' % (self.main_output))
+        os.system('mkdir %s' % (self.main_output))
+        self.raw_output = '%s/raw' % (self.main_output)
+        os.system('mkdir %s' % (self.raw_output))
         self.dump_info(maxgenerations, size, crossrate, mutrate)
-
-    def dump_info(self, maxgen, size, crossrate, mutrate):
-        infofile = open('%s/info' % (self.MainOutputDir), 'w')
-        s = 'Objectives: '
-        for objective in self.objectives:
-            s += '%s ' % (objective)
-        infofile.write(s + '\n')
-        s = 'Maximum generations: %i\n' % (maxgen)
-        infofile.write(s)
-        s = 'Population size: %i\n' % (size)
-        infofile.write(s)
-        s = 'Crossover rate: %.3f\n' % (crossrate)
-        infofile.write(s)
-        s = 'Mutation rate: %.3f\n' % (mutrate)
-        infofile.write(s)
-        infofile.close()
-
     
-    def open_logfiles(self, i):
-        self.OutputDirName = '%s/%i' % (self.MainOutputDir, i)
-        os.system('mkdir %s' % (self.OutputDirName) )
-        self.conv_log = open('%s/convergence.log' % (self.OutputDirName,),'w')
-        self.stats_log = open('%s/statistics.log' % (self.OutputDirName,),'w')
+    def write_final(self, best_individuals, generations, times):
+        self.stats(best_individuals, generations, times)
+        self.graphical_data(best_individuals)
+    
+    def graphical_data(self, best_individuals):
+        data = {}
+        for var_name in self.var_ranges:
+            data[var_name] = [individ.chromosome[var_name] for individ in individuals]
+        obj = 0 
+        for objective in self.objectives:
+            data[objective] = [individ.objectives[obj] for individ in individuals]
+            obj += 1
+        if self.graphics:
+            self.correlate_pairs(data)
+            self.build_histograms(data)
+        self.save_correlation_data(data)
+        self.save_histogram_data(data)
+
+    def save_correlation_data(self, data):
+        file = open('%s/correlations.csv' % (self.raw_output), 'wb') 
+        writer = csv.writer(file)
+        for key, value in data.items():
+            writer.writerow([key, value])
+        file.close()
+        
+    def correlate_pairs(self, data)
+        pairs = itertools.combinations(data.keys(), 2)
+        for pair in pairs:
+            Xname = pair[0]
+            Yname = pair[1]
+            x = values[Xname]
+            y = values[Yname]
+            if Xname in self.var_ranges: xlim = self.var_ranges[Xname]
+            else: xlim = [min(x), max(x)]
+            if Yname in self.var_ranges: ylim = self.var_ranges[Yname]
+            else: ylim = [min(y), max(y)]
+            plt.grid(True)
+            plt.xlabel(Xname)
+            plt.ylabel(Yname)
+            plt.ylim(ylim)
+            plt.xlim(xlim)
+            correlation = numpy.corrcoef(x,y)[0,1]
+            R2 = correlation**2
+            if R2 > 0.80:
+                xx = numpy.arange(xmin, xmax, 0.01)
+                a,b = numpy.polyfit(x, y, 1)
+                yy = a*xx + b
+                plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.4f*%s + %.4f\nR2 = %.2f' % (pair[1], a, pair[0], b, R2))
+            plt.plot(x, y, 'ro', ms=7.5)
+            plt.legend(loc='upper right')
+            filename = self.main_output + '/%s-%s.pdf' % (pair[1], pair[0])
+            plt.savefig(filename)
+            plt.close()
+    
+    def build_histograms(self, data):
+        for key, values in data.items():
+            plt.grid(True)
+            plt.xlabel(key)
+            plt.yticks([])
+            n, bins, patches = plt.hist(values, 15, normed=1, facecolor='green', alpha=0.75)
+            filename = self.main_output + '/%s.pdf' % (key)
+            plt.savefig(filename)
+            plt.close()
+    
+    def stats(self, best_individuals, generations, times):
+        self.statsfile = open('%s/stats' % (self.main_output), 'w')
+        self.stats_convergence(self, best_individuals, generations, times)
+        chromosomes = [individ.chromosome for individ in best_individuals]
+        self.stats_variables(self, chromosomes)
+        self.statsfile.close()
 
     def write_log(self, elite, generation, deviations, averages, time):
-        self.statsfile = open('%s/stats' % (self.MainOutputDir), 'w')
         self.write_header() # line with titles in outfile
         # elite is the first pareto front
         # report best solution(s) at the current generation
@@ -86,9 +141,6 @@ class Output(object):
         reportstr += 'time\n'
         self.stats_log.write(reportstr)
     
-    def write_final(self, best_individuals, generations, times):
-        self.stats(best_individuals, generations, times)
-        self.final_graphical_data(best_individuals)
     
     def stats_convergence(self, best_individuals, generations, times):
         best_individuals.sort()
@@ -101,7 +153,8 @@ class Output(object):
                 s = '%s: %.4f\n' % (var_name, value)
                 self.statsfile.write(s)
         if self.num_objectives > 1:
-            s = 'PARETO FRONT\n'
+            num_solutions = len(best_individuals)
+            s = 'PARETO FRONT: %i solutions\n' % (self.num_solutions)
             self.statsfile.write(s)
             for individ in best_individuals:
                 obj = 0
@@ -146,6 +199,29 @@ class Output(object):
             self.statsfile.write(s)
             s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (numpy.amin(prms[var_name]), numpy.amax(prms[var_name]), numpy.average(prms[var_name]), numpy.median(prms[var_name]), numpy.std(prms[var_name]))
             self.statsfile.write(s)
+    
+    def dump_info(self, maxgen, size, crossrate, mutrate):
+        infofile = open('%s/info' % (self.MainOutputDir), 'w')
+        s = 'Objectives: '
+        for objective in self.objectives:
+            s += '%s ' % (objective)
+        infofile.write(s + '\n')
+        s = 'Maximum generations: %i\n' % (maxgen)
+        infofile.write(s)
+        s = 'Population size: %i\n' % (size)
+        infofile.write(s)
+        s = 'Crossover rate: %.3f\n' % (crossrate)
+        infofile.write(s)
+        s = 'Mutation rate: %.3f\n' % (mutrate)
+        infofile.write(s)
+        infofile.close()
+
+    def open_logfiles(self, i):
+        output_dir = '%s/%i' % (self.main_output, i)
+        os.system('mkdir %s' % (self.output_dir) )
+        self.conv_log = open('%s/convergence.log' % (output_dir),'w')
+        self.stats_log = open('%s/statistics.log' % (output_dir),'w')
 
     def close_logfiles(self):
-        self.outfile.close()
+        self.conv_log.close()
+        self.stats_log.close()
