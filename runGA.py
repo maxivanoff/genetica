@@ -34,7 +34,7 @@ var_ranges = {
 fitness = Fitness(problem_name, comm=comm, size=size)
 
 if rank==0:
-    output = ioo.Output(problem_name_tmp, var_ranges) 
+    output = ioo.Output(problem_name, objectives, var_ranges, max_gen, size, cross_rate, mutation_rate) 
     env = Environment.Environment(objectives, var_ranges, size, max_gen, threshold, conv_gen, cross_rate, mutation_rate, num_cycles,  Individual.RealCoded, Population.Population, fitness, output)
     env.run()
 else:

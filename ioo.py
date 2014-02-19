@@ -6,8 +6,8 @@ import matplotlib.mlab as mlab
 from genetica import IO
 
 class Output(IO.Output):
-    def __init__(self, problem_name, var_ranges):
-        IO.Output.__init__(self, problem_name, var_ranges)
+    def __init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate):
+        IO.Output.__init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate)
 
     def write_final(self, best_individuals, generations,times):
         self.stats(best_individuals, generations, times)
@@ -20,21 +20,23 @@ class Output(IO.Output):
         self.statsfile.close()
     
     def final_graphical_data(self, best_individuals):
-        filename = '%s/../' % (self.OutputDirName)
-        chromosomes = [individ.chromosome for individ in best_individuals]
+        filename = '%s/' % (self.MainOutputDir)
+        # histogramms
+        obj = 0 
+        for objective in self.objectives:
+            data = [individ.objectives[obj] for individ in best_individuals]
+            self.build_histograms(data, filename, objective)
+            obj += 1
+        for var_name in self.var_ranges:
+            data = [individ.chromosome[var_name] for individ in best_individuals]
+            self.build_histograms(data, filename, objective)
         scores = [individ.score for inidivid in best_individuals]
         self.correlate_pairs(best_individuals, filename)
         self.build_histogramms(scores, filename, 'score')
         for var_name in chromosomes[0]:
             self.build_histogramms(chromosomes, filename, var_name)
     
-    def build_histogramms(self, chromosomes,filename, type):
-        data = []
-        if type=='score':## here chromosomes are not actual chromosomes, but just scores
-            data = chromosomes
-        else:
-            for chromosome in chromosomes:
-                data.append(chromosome[type])
+    def build_histogramms(self, data, filename, type):
         plt.grid(True)
         plt.xlabel(type)
         plt.yticks([])
