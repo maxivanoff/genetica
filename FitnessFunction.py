@@ -58,14 +58,14 @@ class GeneralFitnessFunction(object):
     def __init__(self):
         self.objectives = {}
     
-    def get_score(self, chromosome):
+    def get_scores(self, chromosome):
         return self.objectives
    
 class ParallelFitness(MPIdistribution, GeneralFitnessFunction):
 
     def __init__(self, comm, size):
         GeneralFitnessFunction.__init__(self)
-        fitness_function = self.get_score
+        fitness_function = self.get_scores
         MPIdistribution.__init__(self, comm, size, fitness_function)
     
     def send_data(self, individuals):
@@ -80,7 +80,7 @@ class ParallelFitness(MPIdistribution, GeneralFitnessFunction):
 
     def recieve_results(self, individuals):
         for i in range(self.TasksPerProc):
-            individuals[i].score = self.masters_results[i]
+            individuals[i].objectives = self.masters_results[i]
         for proc in range(1, self.num_proc):
             rcvd_results = self.comm.recv(source=proc, tag=proc)
             for i in range(self.TasksPerProc):

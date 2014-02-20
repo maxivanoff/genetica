@@ -16,7 +16,7 @@ class Population(object):
         self.deviations = {}
         self.time = None
         self.objectives = objectives
-        self.elite = None
+        self.elite = []
         self.last_rank = None
         self.starting_time = time.time()
 
@@ -37,7 +37,7 @@ class Population(object):
             self.deviations[var_name] = numpy.std(values)
      
     def mutation(self, individual):
-        rnd_mut = random()
+        rnd_mut = random.random()
         if rnd_mut < self.mutation_rate:
             individual.mutation()
         else:
@@ -45,43 +45,43 @@ class Population(object):
     
     def define_front(self, individuals):
         front = []
+        #print 'individs'
+        #print [individ.objectives for individ in individuals]
         for individ in individuals:
             tmp_front = front[:]
             tmp_front.append(individ)
             for f_individ in front:
+                if individ == f_individ:
+                    tmp_front.remove(f_individ)
                 if individ.dominate(f_individ):
                     tmp_front.remove(f_individ)
                 if f_individ.dominate(individ):
                     tmp_front.remove(individ)
                     break
+
             front = tmp_front[:]
+        #print 'front'
+        #print [individ.objectives for individ in front]
         return front
     
     def assign_ranks(self):
         tmp_population = self.individuals[:]
+        self.elite = []
         rank = 1
         if tmp_population:
             front = self.define_front(tmp_population)
             for individ in front:
+                if rank==1: self.elite.append(individ)
                 individ.rank = rank
                 tmp_population.remove(individ)
             rank += 1
         self.last_rank = rank
 
-    def save_elite(self):
-        elite = []
-        for individ in self.individuals:
-            if individ.rank == 1: 
-                best = individ.copy()
-                elite.append(deepcopy(best))
-        self.elite = elite[:]
-        return elite
-    
     def evolve(self):
-        next_population = self.save_elite()
+        next_population = self.elite[:]
         while len(next_population) < self.size:
             mate1 = self.select()
-            if random() < self.crossover_rate:
+            if random.random() < self.crossover_rate:
                 mate2 = self.select()
                 offspring = mate1.crossover(mate2)
             else:

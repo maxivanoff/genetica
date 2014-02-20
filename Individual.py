@@ -20,24 +20,27 @@ class Individual(object):
 
     def dominate(self, other):
         a = False
-        for obj_name in self.objective.keys(): # smaller means better
+        for obj_name in self.objectives.keys(): # smaller means better
             if self.objectives[obj_name] > other.objectives[obj_name]: return False
             if self.objectives[obj_name] < other.objectives[obj_name]: a = True
         return a
 
-   # def __eq__(self, other):
-   #     a = False
-   #     for i in range(self.num_objectives):
-   #         if self.objectives[i] == other.objectives[i]: a = True
-   #         else: return False
-   #     return a
+    def __eq__(self, other):
+        for obj_name in self.objectives.keys():
+            if self.objectives[obj_name] == other.objectives[obj_name]: a = True
+            else: return False
+        for var_name in self.chromosome.keys():
+            if self.chromosome[var_name] == other.chromosome[var_name]: a = True
+            else: return False
+        return a
         
     def score(self):
+        names = self.objectives.keys()
         try:
-            self.objectives[1]
+            names[1]
             score = self.rank
         except:
-            score = self.objective[0]
+            score = self.objectives[names[0]]
         return score
 
     def __cmp__(self, other):

@@ -1,0 +1,52 @@
+PARETO FRONT: 6 solutions
+objective1: 0.00000760
+objective2: 0.00000002
+Y: -0.0000
+X: 0.0000
+--------------------
+objective1: 0.00000001
+objective2: 0.00000010
+Y: 0.0000
+X: 0.0000
+--------------------
+objective1: 0.00000000
+objective2: 0.00000075
+Y: -0.0000
+X: 0.0000
+--------------------
+objective1: 0.00000767
+objective2: 0.00000000
+Y: -0.0000
+X: 0.0000
+--------------------
+objective1: 0.00000064
+objective2: 0.00000009
+Y: -0.0000
+X: 0.0000
+--------------------
+objective1: 0.00000375
+objective2: 0.00000007
+Y: -0.0000
+X: 0.0000
+--------------------
+
+objective1
+lowest: 0.00000000 highest: 0.00000767 average: 0.00000328 median: 0.00000219 std: 0.00000333
+
+objective2
+lowest: 0.00000000 highest: 0.00000075 average: 0.00000017 median: 0.00000008 std: 0.00000026
+
+GENERATIONS
+lowest: 201 highest: 201 average: 201.0 median: 201.0 std: 0.0
+
+
+TIMES
+lowest: 0.843 highest: 0.843 average: 0.843 median: 0.843 std: 0.000
+
+VARIABLES
+variable name: Y
+lowest: -0.0000 highest: 0.0000 average: -0.0000 median: -0.0000 std: 0.0000
+
+variable name: X
+lowest: 0.0000 highest: 0.0000 average: 0.0000 median: 0.0000 std: 0.0000
+

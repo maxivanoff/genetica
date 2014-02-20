@@ -1,9 +1,12 @@
 import os
 import csv
 import numpy
+import itertools
 try:
     import matplotlib.pyplot as plt
-    plt.figure()
+    fig=plt.figure()
+    fig.clear()
+    plt.close()
     display = True
 except:
     display = False
@@ -15,7 +18,7 @@ class Output(object):
         else: self.graphics = False
         self.problem_name = problem_name
         self.objectives = objectives
-        self.num_objectives = len(num_objectives)
+        self.num_objectives = len(objectives)
         self.var_ranges = var_ranges ## dictionary, it has names of variables
         if not os.path.exists('./output'):
             os.system('mkdir ./output')
@@ -30,7 +33,7 @@ class Output(object):
     def write_final(self, best_individuals, generations, times):
         best_individuals.sort() # makes sense for single objective only
         self.num_solutions = len(best_individuals)
-        data = convert_to_data(best_individuals)
+        data = self.convert_to_data(best_individuals)
         self.stats(data, generations, times)
         if self.graphics:
             self.correlate_pairs(data)
@@ -40,11 +43,9 @@ class Output(object):
     def convert_to_data(self, best_individuals):
         data = {}
         for var_name in self.var_ranges:
-            data[var_name] = [individ.chromosome[var_name] for individ in individuals]
-        obj = 0 
-        for objective in self.objectives:
-            data[objective] = [individ.objectives[obj] for individ in individuals]
-            obj += 1
+            data[var_name] = [individ.chromosome[var_name] for individ in best_individuals]
+        for obj_name in self.objectives:
+            data[obj_name] = [individ.objectives[obj_name] for individ in best_individuals]
         return data
         
     def save_data(self, data):
@@ -55,13 +56,13 @@ class Output(object):
         file.close()
 
         
-    def correlate_pairs(self, data)
+    def correlate_pairs(self, data):
         pairs = itertools.combinations(data.keys(), 2)
         for pair in pairs:
             Xname = pair[0]
             Yname = pair[1]
-            x = values[Xname]
-            y = values[Yname]
+            x = data[Xname]
+            y = data[Yname]
             if Xname in self.var_ranges: xlim = self.var_ranges[Xname]
             else: xlim = [min(x), max(x)]
             if Yname in self.var_ranges: ylim = self.var_ranges[Yname]
@@ -96,25 +97,25 @@ class Output(object):
     
     def stats(self, data, generations, times):
         self.statsfile = open('%s/stats' % (self.main_output), 'w')
-        self.stats_convergence(self, data, generations, times)
-        self.stats_variables(self, data)
+        self.stats_convergence(data, generations, times)
+        self.stats_variables(data)
         self.statsfile.close()
 
     def write_log(self, elite, generation, deviations, averages, time):
-        self.write_header() # line with titles in outfile
         # elite is the first pareto front
         # report best solution(s) at the current generation
         for individ in elite:
             reportstr = '%i ' % (generation)
             # report objective values
-            for objective in individ.objectives:
-                reportstr += '%.8f ' % (objective)
+            for obj_name in self.objectives:
+                value = individ.objectives[obj_name]
+                reportstr += '%.16f ' % (value)
             # report variables values
             for var_name in self.var_ranges:
                 value = individ.chromosome[var_name]
-                reportstr += '%.4f ' % (value)
+                reportstr += '%.16f ' % (value)
             reportstr += '\n'
-        self.conv_log.write(reportstr)
+            self.conv_log.write(reportstr)
         # report stats at the current generation
         reportstr = '%i ' % (generation)
         for objective in self.objectives:
@@ -133,7 +134,7 @@ class Output(object):
             reportstr += '%s ' % (objective)
         for var_name in self.var_ranges:
             reportstr += '%s ' % (var_name)
-        self.conv_log.write(reportstr)
+        self.conv_log.write(reportstr+'\n')
         # statistics.log        
         reportstr = 'gen '
         for objective in self.objectives:
@@ -164,13 +165,15 @@ class Output(object):
                 for var_name in self.var_ranges:
                     s = '%s: %.4f\n' % (var_name, data[var_name][i])
                     self.statsfile.write(s)
+                s = '--------------------\n'
+                self.statsfile.write(s)
+
         for objective in self.objectives:
             s = '\n%s\n' % (objective)
             self.statsfile.write(s)
             scores = data[objective]
             s = 'lowest: %.8f highest: %.8f average: %.8f median: %.8f std: %.8f\n' % (numpy.amin(scores), numpy.amax(scores), numpy.average(scores), numpy.median(scores), numpy.std(scores))
-            obj += 1
-        self.statsfile.write(s)
+            self.statsfile.write(s)
         
         s = '\nGENERATIONS\n'
         self.statsfile.write(s)
@@ -182,23 +185,17 @@ class Output(object):
         s = 'lowest: %.3f highest: %.3f average: %.3f median: %.3f std: %.3f\n\n' % (numpy.amin(times), numpy.amax(times), numpy.average(times), numpy.median(times), numpy.std(times))
         self.statsfile.write(s)
 
-    def stats_variables(self, chromosomes):
+    def stats_variables(self, data):
         s = 'VARIABLES\n'
         self.statsfile.write(s)
-        prms = {}
-        for var_name in self.var_ranges:
-            prms[var_name] = []
-            for chromosome in chromosomes:
-                prms[var_name].append(chromosome[var_name])
-
         for var_name in self.var_ranges:
             s = 'variable name: %s\n' % (var_name)
             self.statsfile.write(s)
-            s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (numpy.amin(prms[var_name]), numpy.amax(prms[var_name]), numpy.average(prms[var_name]), numpy.median(prms[var_name]), numpy.std(prms[var_name]))
+            s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (numpy.amin(data[var_name]), numpy.amax(data[var_name]), numpy.average(data[var_name]), numpy.median(data[var_name]), numpy.std(data[var_name]))
             self.statsfile.write(s)
     
     def dump_info(self, maxgen, size, crossrate, mutrate):
-        infofile = open('%s/info' % (self.MainOutputDir), 'w')
+        infofile = open('%s/info' % (self.main_output), 'w')
         s = 'Objectives: '
         for objective in self.objectives:
             s += '%s ' % (objective)
@@ -215,9 +212,10 @@ class Output(object):
 
     def open_logfiles(self, i):
         output_dir = '%s/%i' % (self.main_output, i)
-        os.system('mkdir %s' % (self.output_dir) )
+        os.system('mkdir %s' % (output_dir) )
         self.conv_log = open('%s/convergence.log' % (output_dir),'w')
         self.stats_log = open('%s/statistics.log' % (output_dir),'w')
+        self.write_header() # line with titles in outfile
 
     def close_logfiles(self):
         self.conv_log.close()
