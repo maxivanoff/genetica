@@ -1,52 +1,157 @@
-PARETO FRONT: 6 solutions
-objective1: 0.00000760
-objective2: 0.00000002
-Y: -0.0000
-X: 0.0000
+PARETO FRONT: 27 solutions
+objective1: 0.00000068
+objective2: 0.00000000
+X2: -0.0000
+X1: 0.0000
 --------------------
-objective1: 0.00000001
-objective2: 0.00000010
-Y: 0.0000
-X: 0.0000
+objective1: 0.00000047
+objective2: 0.00000022
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000039
+objective2: 0.00000040
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000059
+objective2: 0.00000013
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000058
+objective2: 0.00000015
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000060
+objective2: 0.00000011
+X2: -0.0000
+X1: 0.0000
 --------------------
 objective1: 0.00000000
-objective2: 0.00000075
-Y: -0.0000
-X: 0.0000
+objective2: 0.00000103
+X2: -0.0000
+X1: -0.0000
 --------------------
-objective1: 0.00000767
-objective2: 0.00000000
-Y: -0.0000
-X: 0.0000
+objective1: 0.00000017
+objective2: 0.00000052
+X2: -0.0000
+X1: 0.0000
 --------------------
-objective1: 0.00000064
-objective2: 0.00000009
-Y: -0.0000
-X: 0.0000
+objective1: 0.00000010
+objective2: 0.00000062
+X2: -0.0000
+X1: 0.0000
 --------------------
-objective1: 0.00000375
+objective1: 0.00000067
+objective2: 0.00000004
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000056
+objective2: 0.00000016
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000020
+objective2: 0.00000050
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000052
+objective2: 0.00000020
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000001
+objective2: 0.00000070
+X2: -0.0000
+X1: -0.0000
+--------------------
+objective1: 0.00000008
+objective2: 0.00000066
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000006
+objective2: 0.00000068
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000026
+objective2: 0.00000042
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000014
+objective2: 0.00000059
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000061
+objective2: 0.00000010
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000065
+objective2: 0.00000005
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000021
+objective2: 0.00000048
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000044
+objective2: 0.00000030
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000055
+objective2: 0.00000019
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000036
+objective2: 0.00000042
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000063
 objective2: 0.00000007
-Y: -0.0000
-X: 0.0000
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000062
+objective2: 0.00000008
+X2: -0.0000
+X1: 0.0000
+--------------------
+objective1: 0.00000017
+objective2: 0.00000052
+X2: -0.0000
+X1: 0.0000
 --------------------
 
 objective1
-lowest: 0.00000000 highest: 0.00000767 average: 0.00000328 median: 0.00000219 std: 0.00000333
+lowest: 0.00000000 highest: 0.00000068 average: 0.00000038 median: 0.00000044 std: 0.00000023
 
 objective2
-lowest: 0.00000000 highest: 0.00000075 average: 0.00000017 median: 0.00000008 std: 0.00000026
+lowest: 0.00000000 highest: 0.00000103 average: 0.00000035 median: 0.00000030 std: 0.00000026
 
 GENERATIONS
 lowest: 201 highest: 201 average: 201.0 median: 201.0 std: 0.0
 
 
 TIMES
-lowest: 0.843 highest: 0.843 average: 0.843 median: 0.843 std: 0.000
+lowest: 0.840 highest: 0.840 average: 0.840 median: 0.840 std: 0.000
 
 VARIABLES
-variable name: Y
-lowest: -0.0000 highest: 0.0000 average: -0.0000 median: -0.0000 std: 0.0000
+variable name: X2
+lowest: -0.0000 highest: -0.0000 average: -0.0000 median: -0.0000 std: 0.0000
 
-variable name: X
-lowest: 0.0000 highest: 0.0000 average: 0.0000 median: 0.0000 std: 0.0000
+variable name: X1
+lowest: -0.0000 highest: 0.0000 average: 0.0000 median: 0.0000 std: 0.0000
 

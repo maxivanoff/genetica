@@ -219,20 +219,17 @@ class Output(object):
             writer.writerow(value)
         file.close()
     
-    def read_data(self):
-        reader = csv.reader(open('solutions.csv', 'rb'))
-        
-        return data
-    
-    def read_details(self):
-        reader = csv.reader(open('details.csv', 'rb'))
+    def read_data(self,type):
+        reader = csv.reader(open('%s.csv' % (type), 'rb'))
         i = 0
         data = {}
         for line in reader:
-            if i%2: name = line.split()
+            value = line[0]
+            if not i%2: 
+                name = value
             else: 
-                value = list(line.split())
-                data[name] = value
+                data[name] = [float(v) for v in value.split()]
+            i+=1
         return data
 
     def open_logfiles(self, i):

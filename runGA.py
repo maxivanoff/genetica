@@ -25,8 +25,8 @@ max_gen=200 # Maximum number of generations
 
 # Names and Ranges of Variables
 var_ranges = {
-        'Y': [-1,1],\
-        'X': [-1,1],\
+        'X1': [-1,1],\
+        'X2': [-1,1],\
         }
 
 
