@@ -56,7 +56,7 @@ class MPIdistribution(object):
 class GeneralFitnessFunction(object):
     
     def __init__(self):
-        self.objectives = []
+        self.objectives = {}
     
     def get_score(self, chromosome):
         return self.objectives

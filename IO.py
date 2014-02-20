@@ -3,13 +3,15 @@ import csv
 import numpy
 try:
     import matplotlib.pyplot as plt
+    plt.figure()
+    display = True
 except:
-    plt = False
+    display = False
 
 class Output(object):
 
     def __init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate, graphics):
-        if plt and graphics: self.graphics = True
+        if display and graphics: self.graphics = True
         else: self.graphics = False
         self.problem_name = problem_name
         self.objectives = objectives
@@ -26,10 +28,16 @@ class Output(object):
         self.dump_info(maxgenerations, size, crossrate, mutrate)
     
     def write_final(self, best_individuals, generations, times):
-        self.stats(best_individuals, generations, times)
-        self.graphical_data(best_individuals)
-    
-    def graphical_data(self, best_individuals):
+        best_individuals.sort() # makes sense for single objective only
+        self.num_solutions = len(best_individuals)
+        data = convert_to_data(best_individuals)
+        self.stats(data, generations, times)
+        if self.graphics:
+            self.correlate_pairs(data)
+            self.build_histograms(data)
+        self.save_data(data)
+ 
+    def convert_to_data(self, best_individuals):
         data = {}
         for var_name in self.var_ranges:
             data[var_name] = [individ.chromosome[var_name] for individ in individuals]
@@ -37,18 +45,15 @@ class Output(object):
         for objective in self.objectives:
             data[objective] = [individ.objectives[obj] for individ in individuals]
             obj += 1
-        if self.graphics:
-            self.correlate_pairs(data)
-            self.build_histograms(data)
-        self.save_correlation_data(data)
-        self.save_histogram_data(data)
-
-    def save_correlation_data(self, data):
-        file = open('%s/correlations.csv' % (self.raw_output), 'wb') 
+        return data
+        
+    def save_data(self, data):
+        file = open('%s/solutions.csv' % (self.raw_output), 'wb') 
         writer = csv.writer(file)
         for key, value in data.items():
             writer.writerow([key, value])
         file.close()
+
         
     def correlate_pairs(self, data)
         pairs = itertools.combinations(data.keys(), 2)
@@ -69,13 +74,13 @@ class Output(object):
             correlation = numpy.corrcoef(x,y)[0,1]
             R2 = correlation**2
             if R2 > 0.80:
-                xx = numpy.arange(xmin, xmax, 0.01)
+                xx = numpy.arange(xlim[0], xlim[1], 0.01)
                 a,b = numpy.polyfit(x, y, 1)
                 yy = a*xx + b
-                plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.4f*%s + %.4f\nR2 = %.2f' % (pair[1], a, pair[0], b, R2))
+                plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.4f*%s + %.4f\nR2 = %.2f' % (Yname, a, Xname, b, R2))
             plt.plot(x, y, 'ro', ms=7.5)
             plt.legend(loc='upper right')
-            filename = self.main_output + '/%s-%s.pdf' % (pair[1], pair[0])
+            filename = self.main_output + '/%s-%s.pdf' % (Yname, Xname)
             plt.savefig(filename)
             plt.close()
     
@@ -89,11 +94,10 @@ class Output(object):
             plt.savefig(filename)
             plt.close()
     
-    def stats(self, best_individuals, generations, times):
+    def stats(self, data, generations, times):
         self.statsfile = open('%s/stats' % (self.main_output), 'w')
-        self.stats_convergence(self, best_individuals, generations, times)
-        chromosomes = [individ.chromosome for individ in best_individuals]
-        self.stats_variables(self, chromosomes)
+        self.stats_convergence(self, data, generations, times)
+        self.stats_variables(self, data)
         self.statsfile.close()
 
     def write_log(self, elite, generation, deviations, averages, time):
@@ -142,35 +146,28 @@ class Output(object):
         self.stats_log.write(reportstr)
     
     
-    def stats_convergence(self, best_individuals, generations, times):
-        best_individuals.sort()
+    def stats_convergence(self, data, generations, times):
         if self.num_objectives == 1:
             s = 'BEST SOLUTION\n'
             self.statsfile.write(s)
-            individ = best_individuals[0]
             for var_name in self.var_ranges:
-                value = individ.chromosome[var_name]
+                value = data[var_name][0]
                 s = '%s: %.4f\n' % (var_name, value)
                 self.statsfile.write(s)
         if self.num_objectives > 1:
-            num_solutions = len(best_individuals)
             s = 'PARETO FRONT: %i solutions\n' % (self.num_solutions)
             self.statsfile.write(s)
-            for individ in best_individuals:
-                obj = 0
+            for i in range(self.num_solutions):
                 for objective in self.objectives:
-                    s = '%s: %.8f\n' % (objective, individ.objectives[obj])
+                    s = '%s: %.8f\n' % (objective, data[objective][i])
                     self.statsfile.write(s)
-                    obj += 1
                 for var_name in self.var_ranges:
-                    value = individ.chromosome[var_name]
-                    s = '%s: %.4f\n' % (var_name, value)
+                    s = '%s: %.4f\n' % (var_name, data[var_name][i])
                     self.statsfile.write(s)
-        obj = 0
         for objective in self.objectives:
             s = '\n%s\n' % (objective)
             self.statsfile.write(s)
-            scores = [individ.objectives[obj] for individ in best_individuals]
+            scores = data[objective]
             s = 'lowest: %.8f highest: %.8f average: %.8f median: %.8f std: %.8f\n' % (numpy.amin(scores), numpy.amax(scores), numpy.average(scores), numpy.median(scores), numpy.std(scores))
             obj += 1
         self.statsfile.write(s)

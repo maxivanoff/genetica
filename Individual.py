@@ -3,11 +3,10 @@ from math import log
 
 class Individual(object):
 
-    def __init__(self, num_objectives):
+    def __init__(self):
         self.chromosome = {}
-        self.objectives = [] # list of objective values
+        self.objectives = {} # dict with objectives values
         self.optimization = 'minimization'
-        self.num_objectives = num_objectives
         self.rank = None # Pareto Front Rank
 
     def make_chromosome(self):
@@ -21,9 +20,9 @@ class Individual(object):
 
     def dominate(self, other):
         a = False
-        for i in range(self.num_objectives): # smaller means better
-            if self.objectives[i] > other.objectives[i]: return False
-            if self.objectives[i] < other.objectives[i]: a = True
+        for obj_name in self.objective.keys(): # smaller means better
+            if self.objectives[obj_name] > other.objectives[obj_name]: return False
+            if self.objectives[obj_name] < other.objectives[obj_name]: a = True
         return a
 
    # def __eq__(self, other):
@@ -33,16 +32,23 @@ class Individual(object):
    #         else: return False
    #     return a
         
-    
+    def score(self):
+        try:
+            self.objectives[1]
+            score = self.rank
+        except:
+            score = self.objective[0]
+        return score
+
     def __cmp__(self, other):
         if self.optimization == 'minimization':
-            return cmp(self.rank, other.rank)
+            return cmp(self.score(), other.score())
         if self.optimization == 'maximization':
-            return cmp(other.rank, self.rank)
+            return cmp(other.score(), self.score())
 
 class BinaryCoded(Individual):
-    def __init__(self, var_ranges, num_objectives):
-        Individual.__init__(self, num_objectives)
+    def __init__(self, var_ranges):
+        Individual.__init__(self)
         self.var_ranges = var_ranges
         self.var_names = [name for name in self.var_ranges]
         self.accuracy = 3
@@ -108,8 +114,8 @@ class BinaryCoded(Individual):
 
 class RealCoded(Individual):
 
-    def __init__(self, gene_ranges, num_objectives):
-        Individual.__init__(self, num_objectives)
+    def __init__(self, gene_ranges):
+        Individual.__init__(self)
         self.gene_ranges = gene_ranges # dictionary
         self.gene_names = [name for name in self.gene_ranges]
         self.make_chromosome()

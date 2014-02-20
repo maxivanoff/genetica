@@ -16,23 +16,20 @@ class Population(object):
         self.deviations = {}
         self.time = None
         self.objectives = objectives
-        self.num_objectives = len(objectives)
         self.elite = None
         self.last_rank = None
         self.starting_time = time.time()
 
     def make_population(self):
-        return [self.individual(self.var_ranges, self.num_objectives) for i in range(self.size)]
+        return [self.individual(self.var_ranges) for i in range(self.size)]
 
     def collect_statistics(self):
         self.time = time.time()-self.starting_time
         # stats for objectives
-        obj = 0
-        for objective in self.objectives:
-            scores = [individ.objectives[obj] for individ in self.individuals]
-            self.deviations[objective] = numpy.std(scores)
-            self.averages[objective] = numpy.average(scores)
-            obj += 1
+        for obj_name in self.objectives:
+            scores = [individ.objectives[obj_name] for individ in self.individuals]
+            self.deviations[obj_name] = numpy.std(scores)
+            self.averages[obj_name] = numpy.average(scores)
         # stats for variables
         for var_name in self.var_ranges:
             values = [individ.chromosome[var_name] for individ in self.individuals]
