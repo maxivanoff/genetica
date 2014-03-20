@@ -17,7 +17,6 @@ class Population(object):
         self.time = None
         self.objectives = objectives
         self.elite = None
-        self.last_rank = None
         self.starting_time = time.time()
 
     def make_population(self):
