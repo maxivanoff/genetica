@@ -16,8 +16,12 @@ class Population(object):
         self.deviations = {}
         self.time = None
         self.objectives = objectives
+<<<<<<< HEAD
+        self.elite = None
+=======
         self.elite = []
         self.last_rank = None
+>>>>>>> 55b4d3eb2b4b13e72bcade3aba9e615e840da627
         self.starting_time = time.time()
 
     def make_population(self):
