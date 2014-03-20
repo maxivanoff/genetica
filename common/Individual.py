@@ -4,7 +4,7 @@ from math import log
 class CommonIndividual(object):
     """
     Abstract class. Defines critical attributes and methods.
-    Common for sing and multi objective(s) optimizations.
+    Common for single and multi objective(s) optimizations.
     """
     def __init__(self):
         self.chromosome = {}
@@ -31,10 +31,10 @@ class CommonIndividual(object):
 class BinaryCoded(CommonIndividual):
     """
     Individual with binary coded chromosome. 
-    Common for sing and multi objective(s) optimizations.
+    Common for single and multi objective(s) optimizations.
     """
     def __init__(self, var_ranges):
-        Individual.__init__(self)
+        CommonIndividual.__init__(self)
         self.var_ranges = var_ranges
         self.var_names = [name for name in self.var_ranges]
         self.accuracy = 3
@@ -101,10 +101,10 @@ class BinaryCoded(CommonIndividual):
 class RealCoded(CommonIndividual):
     """
     Individual with real coded chromosome. 
-    Common for sing and multi objective(s) optimizations.
+    Common for single and multi objective(s) optimizations.
     """
     def __init__(self, gene_ranges):
-        Individual.__init__(self)
+        CommonIndividual.__init__(self)
         self.gene_ranges = gene_ranges # dictionary
         self.gene_names = [name for name in self.gene_ranges]
         self.make_chromosome()

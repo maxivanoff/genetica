@@ -6,14 +6,14 @@ class CommonEnvironment(object):
     step() defines the procedure performed at each iteration(generation)
 
     """
-    def __init__(self, objectives=None, var_ranges=None, size=None, maxgenerations=None, crossover_rate=None, mutation_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
+    def __init__(self, objectives=None, var_ranges=None, size=None, maxgen=None, cross_rate=None, mut_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
         self.objectives = objectives
         self.num_objectives = len(objectives)
         self.var_ranges = var_ranges
         self.size = size
-        self.maxgenerations = maxgenerations
-        self.crossover_rate = crossover_rate
-        self.mutation_rate = mutation_rate
+        self.maxgenerations = maxgen
+        self.crossover_rate = cross_rate
+        self.mutation_rate = mut_rate
         self.num_cycles = num_cycles # number of GA repetitions
         self.Individual = Individual
         self.Population = Population
@@ -24,9 +24,6 @@ class CommonEnvironment(object):
         self.output = output
 
     def initialize_population(self):
-        """
-        may be should be removed from the common
-        """
         self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.objectives)
         self.fitness.calculation(self.population.individuals) #fitness function calculation for 0 generation
         ##self.population.assign_ranks()
@@ -48,7 +45,7 @@ class CommonEnvironment(object):
             self.step() # single GA iteration
         self.num_generations.append(self.generation)
         self.times.append(self.population.time)
-        self.best_individuals += self.population.best_individuals
+        self.best_individuals += self.population.best()
 
     def too_many_generations(self):
         return self.generation > self.maxgenerations
@@ -57,7 +54,6 @@ class CommonEnvironment(object):
         pass
 
     def report(self): # this is done each generation
-        elite = self.population.save_best()
-        self.output.write_log(elite, self.generation, self.population.deviations, self.population.averages, self.population.time)
+        self.output.write_log(self.population.best(), self.generation, self.population.deviations, self.population.averages, self.population.time)
 
 

@@ -44,9 +44,9 @@ class CommonPopulation(object):
         else:
             pass # no mutation
     
-    def common_crossover(self, mate1, selection_type='Proportional Selection')
+    def common_crossover(self, mate1, selection_type='Proportional Selection'):
         if random.random() < self.crossover_rate:
-            mate2 = self.select(selection_type)
+            mate2 = self.select(selection_type=selection_type)
             offspring = mate1.crossover(mate2)
         else:
             offspring = mate1.copy()
@@ -69,10 +69,12 @@ class CommonPopulation(object):
     def proportional_selection(self, objective):
         sorted_individs = sorted(self.individuals, key=lambda ind: ind.objectives[objective])
         rndm = 0
+        mins = sorted_individs[0].objectives[objective]
+        maxs = sorted_individs[-1].objectives[objective]
         while not rndm:
-            rndm = random.uniform(0., sorted_individs[-1].objectives[objective])
+            rndm = random.uniform(mins, maxs)
         competitors = []
-        for individ in individuals:
+        for individ in sorted_individs:
             if individ.objectives[objective] <= rndm:
                 competitors.append(individ)
         return random.choice(competitors)
