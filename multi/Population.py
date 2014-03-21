@@ -57,4 +57,15 @@ class VEGAPopulation(Population.CommonPopulation):
         return self.individuals
 
 
+class RDGAPopulation(Population.CommonPopulation):
+    class RDGrid:
+        def __init__(self):
+            pass
+        def update(self):
+            pass
+ 
+    def __init__(self, individual=None, size=None, cross_rate=None, mut_rate=None, var_ranges=None, objectives=None):
+        Population.CommonPopulation.__init__(self, individual=individual, size=size, cross_rate=cross_rate, mut_rate=mut_rate, var_ranges=var_ranges, objectives=objectives)
+        self.RDgrid = RDGrid()
+
 
