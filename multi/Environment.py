@@ -34,7 +34,6 @@ class RDGAEnvironment(Environment.CommonEnvironment):
     def initialize_population(self):
         self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.objectives)
         self.fitness.calculation(self.population.individuals) #fitness function calculation for 0 generation
-        self.population.RDgrid.update()
         self.population.collect_statistics() # averaging
         self.report() # write data to logfiles
     
