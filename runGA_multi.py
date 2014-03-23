@@ -9,13 +9,13 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 graphics = True # plots matplotlib graphs
 
-problem_name = 'quadratic_mod'
+problem_name = 'quadratic'
 
 # Objectives
 objectives = ['objective1', 'objective2']
 
 # GA settings
-size=18 #population size
+size=60 #population size
 num_cycles=1 # number of GA cycles
 cross_rate = 1.0
 mutation_rate = 0.0

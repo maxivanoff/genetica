@@ -32,7 +32,6 @@ class VEGAPopulation(Population.CommonPopulation):
         subpop=[self.select(objective, selection_type)]
         while len(subpop) < self.subsizes[obj_ind]:
             selected = self.select(objective, selection_type)
-            if selected in subpop:print "lala"
             if not selected in subpop: 
                 subpop += [selected]
         return subpop
@@ -89,8 +88,8 @@ class RDGAPopulation(Population.CommonPopulation):
             self.update()
             self.define_cell_signatures()
 
-        def define_cell_signatures(self):
-            for i in range(cells_number):
+        #def define_cell_signatures(self):
+        #    for i in range(cells_number):
                 
 
         def update(self):
