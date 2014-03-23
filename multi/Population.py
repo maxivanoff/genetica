@@ -24,16 +24,20 @@ class VEGAPopulation(Population.CommonPopulation):
     def get_subpops(self):
         i=0
         for obj in self.objectives:
-            subpop = self.select_proportionally(obj,i)
+            subpop = self.select_subpop(obj,i,'Proportional Selection')
             self.subpops[i] = subpop[:]
             i+=1
     
-    def select_proportionally(self, objective, obj_ind):
-        subpop=[]
-        for i in range(self.subsizes[obj_ind]):
-            subpop += [self.select(objective=objective, selection_type='Proportional Selection')]
+    def select_subpop(self, objective, obj_ind, selection_type):
+        subpop=[self.select(objective, selection_type)]
+        while len(subpop) < self.subsizes[obj_ind]:
+            selected = self.select(objective, selection_type)
+            if selected in subpop:print "lala"
+            if not selected in subpop: 
+                subpop += [selected]
         return subpop
     
+   
     def combine_subpops(self):
         population = []
         for subpop in self.subpops:
