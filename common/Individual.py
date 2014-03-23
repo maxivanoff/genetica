@@ -19,6 +19,10 @@ class CommonIndividual(object):
     def mutation(self):
         pass
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    
     def dominate(self, other):
         a = False
         for obj_name in self.objective.keys(): # smaller means better
