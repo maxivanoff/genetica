@@ -57,59 +57,15 @@ class VEGAPopulation(Population.CommonPopulation):
         return self.individuals
 
 
-class IndividualsContainer(object):
-    def __init__(self, individuals_list):
-        self.container = individuals_list
-        self.objective_names = self.container[0].objectives.keys()
-
-    def __iter__(self):
-        return iter(self.container)
-
-    def get_maxscore(self, objective):
-        pass
-    def get_minscore(self, objective):
-        pass
-    def assign_ranks(self):
-        pass
-
 class RDGAPopulation(Population.CommonPopulation):
-    
-    class ObjectiveSpace:
-        def __init__(self, individuals):
-            self.individuals = individuals
-            self.dimensions_names = self.individuals.objective_names
-            self.dimensionality = len(self.dimensions_names)
-            self.cell_size = {}
-            self.grid_size = {}
-            self.minmax = {}
-            self.update()
-            self.define_cell_signatures()
-
-        def define_cell_signatures(self):
-            for i in range(cells_number):
-                
-
+    class RDGrid:
+        def __init__(self):
+            pass
         def update(self):
-            cells_number = self.dimensionality*[10] # number of cells in each dimension
-            for objective, K in zip(self.dimensions_names, cells_number):
-                fmax = self.individuals.get_maxscore(objective)
-                fmin = self.individuals.get_minscore(objective)
-                self.grid_size[objective] = fmax - fmin
-                self.minmax[objective] = (fmin, fmax)
-                self.cell_size = self.grid_size[objective]/K
-
-        def assign_densities(self):
-            # assign coordinates
-            for individ in self.individuals:
-                for objective in self.dimensions_names:
-                    obj_value = individ.objectives[objective]
-                    crd = int((obj_value - self.minmax[objective][0])/self.cell_size[objective])
-                    individ.coordinates[objective] = crd
-
+            pass
  
     def __init__(self, individual=None, size=None, cross_rate=None, mut_rate=None, var_ranges=None, objectives=None):
         Population.CommonPopulation.__init__(self, individual=individual, size=size, cross_rate=cross_rate, mut_rate=mut_rate, var_ranges=var_ranges, objectives=objectives)
-        self.individuals = IndividualsContainer(self.individuals)
-        self.grid = ObjectiveSpace(self.individuals)
+        self.RDgrid = RDGrid()
 
 

@@ -9,6 +9,7 @@ class CommonIndividual(object):
     def __init__(self):
         self.chromosome = {}
         self.objectives = {} # dict with objectives values
+        self.rank = None # Pareto Front Rank
 
     def make_chromosome(self):
         pass
@@ -94,6 +95,7 @@ class BinaryCoded(CommonIndividual):
         twin.chromosome = self.chromosome
         twin.bin_chromosome = self.bin_chromosome
         twin.objectives = self.objectives
+        twin.rank = self.rank
         return twin
 
 class RealCoded(CommonIndividual):
@@ -161,6 +163,7 @@ class RealCoded(CommonIndividual):
         twin = self.__class__(self.gene_ranges)
         twin.chromosome = self.chromosome
         twin.objectives = self.objectives
+        twin.rank = self.rank
         return twin
  
 
