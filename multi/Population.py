@@ -61,6 +61,10 @@ class VEGAPopulation(Population.CommonPopulation):
 
 
 class IndividualsContainer(object):
+    """
+    In progress...
+    Move to commnon once is done.
+    """
     def __init__(self, individuals_list):
         self.container = individuals_list
         self.objective_names = self.container[0].objectives.keys()
@@ -76,6 +80,9 @@ class IndividualsContainer(object):
         pass
 
 class RDGAPopulation(Population.CommonPopulation):
+    """
+    In progress...
+    """
     
     class ObjectiveSpace:
         def __init__(self, individuals):

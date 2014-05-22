@@ -4,16 +4,13 @@ import numpy
 import itertools
 try:
     import matplotlib.pyplot as plt
-    fig=plt.figure()
-    fig.clear()
-    plt.close()
     display = True
 except:
     display = False
 
 class Output(object):
 
-    def __init__(self, problem_name, objectives, var_ranges, maxgenerations, size, crossrate, mutrate, graphics):
+    def __init__(self, problem_name, objectives, var_ranges, settings, graphics):
         if display and graphics: self.graphics = True
         else: self.graphics = False
         self.problem_name = problem_name
@@ -29,7 +26,7 @@ class Output(object):
         self.raw_output = '%s/raw' % (self.main_output)
         os.system('mkdir %s' % (self.raw_output))
         self.save_details()
-        self.dump_info(maxgenerations, size, crossrate, mutrate)
+        self.dump_info(settings) # save info about GA settings
     
     def write_final(self, best_individuals, generations, times):
         best_individuals.sort() # makes sense for single objective only
@@ -180,7 +177,12 @@ class Output(object):
             s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (numpy.amin(data[var_name]), numpy.amax(data[var_name]), numpy.average(data[var_name]), numpy.median(data[var_name]), numpy.std(data[var_name]))
             self.statsfile.write(s)
     
-    def dump_info(self, maxgen, size, crossrate, mutrate):
+    def dump_info(self, settings):
+        size = settings['size']
+        crossrate = settings['crossover rate']
+        mutrate = settings['mutation rate']
+        maxgen = settings['maximum generations']
+
         infofile = open('%s/info' % (self.main_output), 'w')
         s = 'Objectives: '
         for objective in self.objectives:
@@ -220,9 +222,10 @@ class Output(object):
         file.close()
     
     def read_data(self):
-        reader = csv.reader(open('solutions.csv', 'rb'))
+        pass
+        #reader = csv.reader(open('solutions.csv', 'rb'))
         
-        return data
+        #return data
     
     def read_details(self):
         reader = csv.reader(open('details.csv', 'rb'))

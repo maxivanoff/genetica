@@ -3,18 +3,17 @@ class CommonEnvironment(object):
     """
     Defines all necessary attributes and methods to support the algorithm without actual implementation of the algorithm.
     
-    step() defines the procedure performed at each iteration(generation)
-
+    step() defines the actual algorithm which is performed at each generation
     """
-    def __init__(self, objectives=None, var_ranges=None, size=None, maxgen=None, cross_rate=None, mut_rate=None, num_cycles=None, Individual=None, Population=None, fitness=None, output=None):
+    def __init__(self, objectives=None, var_ranges=None, settings=None, Individual=None, Population=None, fitness=None, output=None):
         self.objectives = objectives
         self.num_objectives = len(objectives)
         self.var_ranges = var_ranges
-        self.size = size
-        self.maxgenerations = maxgen
-        self.crossover_rate = cross_rate
-        self.mutation_rate = mut_rate
-        self.num_cycles = num_cycles # number of GA repetitions
+        self.size = settings['size'] 
+        self.maxgenerations = settings['maximum generations']
+        self.crossover_rate = settings['crossover rate']
+        self.mutation_rate = settings['mutation rate']
+        self.num_cycles = settings['number GA cycles'] # number of GA repetitions
         self.Individual = Individual
         self.Population = Population
         self.fitness = fitness
@@ -51,6 +50,13 @@ class CommonEnvironment(object):
         return self.generation > self.maxgenerations
     
     def step(self): # algorithm itself
+        """
+        General algorithm (can be changed)
+        Selection, crossover mutation to produce new generation
+        Calculation of fitness scores for new generation
+        Averaging
+        Report
+        """
         pass
 
     def report(self): # this is done each generation

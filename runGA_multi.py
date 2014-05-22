@@ -12,16 +12,16 @@ graphics = True # plots matplotlib graphs
 problem_name = 'quadratic'
 
 # Objectives
-objectives = ['objective1', 'objective2']
+objectives = ['objective1']
 
 # GA settings
-size=60 #population size
+size=3 #population size
 num_cycles=1 # number of GA cycles
 cross_rate = 1.0
-mutation_rate = 0.0
+mutation_rate = 0.03
 
 # Convergence criteria
-max_gen=500 # Maximum number of generations
+max_gen=2 # Maximum number of generations
 
 # Names and Ranges of Variables
 var_ranges = {

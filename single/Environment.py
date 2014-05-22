@@ -3,10 +3,10 @@ from genetica.single import Population
 
 class SingleEnvironment(Environment.CommonEnvironment):
 
-    def __init__(self, objectives=None, var_ranges=None, size=None, maxgen=None, cross_rate=None, mut_rate=None, num_cycles=None, fitness=None, output=None):
+    def __init__(self, objectives=None, var_ranges=None, settings=None, fitness=None, output=None):
         Individ = Individual.RealCoded
         Pop = Population.SinglePopulation
-        Environment.CommonEnvironment.__init__(self, objectives=objectives, var_ranges=var_ranges, size=size, maxgen=maxgen, cross_rate=cross_rate, mut_rate=mut_rate, num_cycles=num_cycles, Individual=Individ, Population=Pop, fitness=fitness, output=output)
+        Environment.CommonEnvironment.__init__(self, objectives=objectives, var_ranges=var_ranges, settings=settings, Individual=Individ, Population=Pop, fitness=fitness, output=output)
 
     def initialize_population(self):
         self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.objectives)

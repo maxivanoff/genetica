@@ -2,7 +2,7 @@
 module contains general form of fitness function and its MPI realization
 '''
 
-class MPIdistribution(object):
+class MPIDistribution(object):
 
     def __init__(self, comm, NumTasks, function):
         self.comm = comm
@@ -16,6 +16,10 @@ class MPIdistribution(object):
             raise NameError('Number of tasks per processor must be integer')
     
     def calculation(self, data):
+        """
+        Environment calls this method to perform fitness function calculation
+        data is a list of individuals
+        """
         self.more_work()
         self.masters_work(data)
     
@@ -24,6 +28,9 @@ class MPIdistribution(object):
             self.comm.send(False, dest=proc, tag=proc) # say to all proc that work is not done
     
     def close(self):
+        """
+        Environment calls this method at the end of the algorithm to stop the waiting of slaves. see slaves_work()
+        """
         for proc in range(self.num_proc):
             self.comm.send(True, dest=proc, tag=proc) # say to all proc that work is done
 
@@ -53,20 +60,63 @@ class MPIdistribution(object):
     def work_done(self): # slaves wait to know if work is done
         return self.comm.recv(source=0, tag=self.rank)
 
-class GeneralFitnessFunction(object):
+class NoDistribution(object):
+
+    def __init__(self, function):
+        self.function = function
     
-    def __init__(self):
-        self.objectives = {}
+    def calculation(self, individuals):
+        for individ in individuals:
+            individ.objectives = self.function(individ.chromosome)
+
+    def close(self):
+        pass
+
+
+class GeneralFitnessFunction(object):
+    """
+    Abstract class. 
+    For parallel execution is combined with MPIDistribution class
+    For one-processor execution is combined with NoDistribution class
+
+    get_scores returns objectives scores for a given chromosome
+    """
+    
+    def __init__(self, objectives):
+        self.objectives = objectives
+
+    def f(self, objective_name, chromosome):
+        """
+        actual fitness function
+        returns a score of the chromosome for a given objective name
+        """
+        if objective_name == 'objective1':
+            score = None
+        if objective_name == 'objective2':
+            score = None
+        return score
     
     def get_scores(self, chromosome):
-        return self.objectives
-   
-class ParallelFitness(MPIdistribution, GeneralFitnessFunction):
+        scores = []
+        for objective in self.objectives:
+            scores.append(self.f(objective, chromosome))
+        objectives = dict((o, s) for o, s in zip(self.objectives, scores))
+        return objectives
 
-    def __init__(self, comm, size):
-        GeneralFitnessFunction.__init__(self)
-        fitness_function = self.get_scores
-        MPIdistribution.__init__(self, comm, size, fitness_function)
+class Single(NoDistribution, GeneralFitnessFunction):
+    
+    def __init__(self, objectives, f):
+        GeneralFitnessFunction.__init__(self, objectives)
+        NoDistribution.__init__(self, self.get_scores)
+        self.f = f
+
+   
+class Parallel(MPIDistribution, GeneralFitnessFunction):
+
+    def __init__(self, objectives, f, comm, size):
+        GeneralFitnessFunction.__init__(self, objectives)
+        MPIDistribution.__init__(self, comm, size, self.get_scores)
+        self.f = f
     
     def send_data(self, individuals):
         for proc in range(self.num_proc):
