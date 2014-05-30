@@ -134,12 +134,14 @@ class Output(object):
         if self.num_objectives == 1:
             s = 'BEST SOLUTION\n'
             self.statsfile.write(s)
+            for objective in self.objectives:
+                best_index = data[objective].index(min(data[objective]))
             for var_name in self.var_ranges:
-                value = data[var_name][0]
+                value = data[var_name][best_index]
                 s = '%s: %.4f\n' % (var_name, value)
                 self.statsfile.write(s)
         if self.num_objectives > 1:
-            s = 'PARETO FRONT: %i solutions\n' % (self.num_solutions)
+            s = 'BEST SOLUTIONS: %i solutions\n' % (self.num_solutions)
             self.statsfile.write(s)
             for i in range(self.num_solutions):
                 for objective in self.objectives:
