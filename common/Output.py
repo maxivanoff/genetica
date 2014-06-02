@@ -62,8 +62,8 @@ class Output(object):
                 a,b = numpy.polyfit(x, y, 1)
                 yy = a*xx + b
                 plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.4f*%s + %.4f\nR2 = %.2f' % (Yname, a, Xname, b, R2))
+                plt.legend(loc='upper right')
             plt.plot(x, y, 'ro', ms=7.5)
-            plt.legend(loc='upper right')
             filename = self.main_output + '/%s-%s.pdf' % (Yname, Xname)
             plt.savefig(filename)
             plt.close()
@@ -209,7 +209,7 @@ class Output(object):
         
     def save_data(self, data):
         file = open('%s/solutions.csv' % (self.raw_output), 'wb') 
-        writer = csv.writer(file, delimiter=' ', quoting=csv.QUOTE_NONE,quotechar='')
+        writer = csv.writer(file, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for key, value in data.items():
             writer.writerow([key])
             writer.writerow(value)
@@ -217,7 +217,7 @@ class Output(object):
     
     def save_details(self):
         file = open('%s/details.csv' % (self.raw_output), 'wb') 
-        writer = csv.writer(file, delimiter=' ', quoting=csv.QUOTE_NONE, quotechar='')
+        writer = csv.writer(file, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for key, value in self.var_ranges.items():
             writer.writerow([key])
             writer.writerow(value)
