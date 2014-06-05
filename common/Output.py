@@ -42,8 +42,16 @@ class Output(object):
     def correlate_pairs(self, data):
         pairs = itertools.combinations(data.keys(), 2)
         for pair in pairs:
-            Xname = pair[0]
-            Yname = pair[1]
+            if pair[0] in self.objectives:
+                Yname = pair[0]
+                Xname = pair[1]
+            elif pair[1] in self.objectives:
+                Yname = pair[1]
+                Xname = pair[0]
+            else:
+                pair = sorted(pair)
+                Yname = pair[0]
+                Xname = pair[1]
             x = data[Xname]
             y = data[Yname]
             if Xname in self.var_ranges: xlim = self.var_ranges[Xname]
@@ -57,7 +65,7 @@ class Output(object):
             plt.xlim(xlim)
             correlation = numpy.corrcoef(x,y)[0,1]
             R2 = correlation**2
-            if R2 > 0.80:
+            if R2 > 0.80 and not Xname in self.objectives and not Yname in self.objectives:
                 xx = numpy.arange(xlim[0], xlim[1], 0.01)
                 a,b = numpy.polyfit(x, y, 1)
                 yy = a*xx + b
