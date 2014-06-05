@@ -25,7 +25,7 @@ class Parallel(FitnessFunction):
         num_proc_jobs = total_jobs/float(self.num_proc) # number of tasks per proc; must be integer
         self.num_proc_jobs = int(num_proc_jobs)
         if self.num_proc_jobs!=num_proc_jobs:
-            print 'Tasks per processor: %.1f\nNumber of tasks: %i\nNumber of processors: %i' % (self.TasksPerProc, NumTasks, self.num_proc)
+            print 'Tasks per processor: %.1f\nNumber of tasks: %i\nNumber of processors: %i' % (num_proc_jobs, total_jobs, self.num_proc)
             raise NameError('Number of tasks per processor must be integer')
     
     def calculation(self, individuals):
