@@ -1,7 +1,8 @@
 import os
 import csv
-import numpy
+import numpy as np
 import itertools
+from scipy.optimize import curve_fit
 try:
     import matplotlib.pyplot as plt
     display = True
@@ -63,13 +64,15 @@ class Output(object):
             plt.ylabel(Yname)
             plt.ylim(ylim)
             plt.xlim(xlim)
-            correlation = numpy.corrcoef(x,y)[0,1]
+            correlation = np.corrcoef(x,y)[0,1]
             R2 = correlation**2
-            if R2 > 0.80 and not Xname in self.objectives and not Yname in self.objectives:
-                xx = numpy.arange(xlim[0], xlim[1], 0.01)
-                a,b = numpy.polyfit(x, y, 1)
+            if R2 > 0.50 and not Xname in self.objectives and not Yname in self.objectives:
+                popt, pcov = curve_fit(lambda xdata,m,n: m*xdata+n, np.array(x), np.array(y))
+                a, b = popt
+                da, db = np.sqrt(np.diag(pcov))
+                xx = np.arange(xlim[0], xlim[1], 0.01)
                 yy = a*xx + b
-                plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.4f*%s + %.4f\nR2 = %.2f' % (Yname, a, Xname, b, R2))
+                plt.plot(xx, yy, '--', color='black', linewidth=3, label='%s = %.3f(%.3f)*%s + %.3f(%.3f)\nR2 = %.2f' % (Yname, a, da, Xname, b, db, R2))
                 plt.legend(loc='upper right')
             plt.plot(x, y, 'ro', ms=7.5)
             filename = self.main_output + '/%s-%s.pdf' % (Yname, Xname)
@@ -165,17 +168,17 @@ class Output(object):
             s = '\n%s\n' % (objective)
             self.statsfile.write(s)
             scores = data[objective]
-            s = 'lowest: %.8f highest: %.8f average: %.8f median: %.8f std: %.8f\n' % (numpy.amin(scores), numpy.amax(scores), numpy.average(scores), numpy.median(scores), numpy.std(scores))
+            s = 'lowest: %.8f highest: %.8f average: %.8f median: %.8f std: %.8f\n' % (np.amin(scores), np.amax(scores), np.average(scores), np.median(scores), np.std(scores))
             self.statsfile.write(s)
         
         s = '\nGENERATIONS\n'
         self.statsfile.write(s)
-        s = 'lowest: %i highest: %i average: %.1f median: %.1f std: %.1f\n\n' % (numpy.amin(generations), numpy.amax(generations), numpy.average(generations), numpy.median(generations), numpy.std(generations))
+        s = 'lowest: %i highest: %i average: %.1f median: %.1f std: %.1f\n\n' % (np.amin(generations), np.amax(generations), np.average(generations), np.median(generations), np.std(generations))
         self.statsfile.write(s)
         
         s = '\nTIMES\n'
         self.statsfile.write(s)
-        s = 'lowest: %.3f highest: %.3f average: %.3f median: %.3f std: %.3f\n\n' % (numpy.amin(times), numpy.amax(times), numpy.average(times), numpy.median(times), numpy.std(times))
+        s = 'lowest: %.3f highest: %.3f average: %.3f median: %.3f std: %.3f\n\n' % (np.amin(times), np.amax(times), np.average(times), np.median(times), np.std(times))
         self.statsfile.write(s)
 
     def stats_variables(self, data):
@@ -184,7 +187,7 @@ class Output(object):
         for var_name in self.var_ranges:
             s = 'variable name: %s\n' % (var_name)
             self.statsfile.write(s)
-            s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (numpy.amin(data[var_name]), numpy.amax(data[var_name]), numpy.average(data[var_name]), numpy.median(data[var_name]), numpy.std(data[var_name]))
+            s = 'lowest: %.4f highest: %.4f average: %.4f median: %.4f std: %.4f\n\n' % (np.amin(data[var_name]), np.amax(data[var_name]), np.average(data[var_name]), np.median(data[var_name]), np.std(data[var_name]))
             self.statsfile.write(s)
     
     def dump_info(self, settings):
