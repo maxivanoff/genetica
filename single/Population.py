@@ -1,4 +1,5 @@
 from genetica.common import Population
+from copy import deepcopy
 
 class SinglePopulation(Population.CommonPopulation):
     
@@ -19,7 +20,7 @@ class SinglePopulation(Population.CommonPopulation):
         self.individuals = next_population[:]
 
     def best(self):
-        return [self.individuals[0].copy()]
+        return [deepcopy(self.individuals[0])]
 
 
 

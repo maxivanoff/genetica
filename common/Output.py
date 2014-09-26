@@ -14,7 +14,7 @@ except:
 
 class Output(object):
 
-    def __init__(self, problem_name=None, objectives=None, results=None, plot_ranges=None, settings=None):
+    def __init__(self, problem_name=None, objectives=None, results=None, plot_ranges=None, var_ranges=None, settings=None):
         self.problem_name = problem_name
         if objectives is None:
             self.objectives = []
@@ -23,6 +23,7 @@ class Output(object):
         self.num_objectives = len(self.objectives)
         self.results = results
         self.plot_ranges = plot_ranges ## dictionary, it has names of variables
+        self.var_ranges = var_ranges
         if not self.problem_name is None:
             if not os.path.exists('./output'):
                 os.system('mkdir ./output')
@@ -54,7 +55,7 @@ class Output(object):
                     value = individ.objectives[obj_name]
                     self.conv_str += '%.8f ' % (value)
                 # report variables values
-                for var_name in self.plot_ranges:
+                for var_name in self.var_ranges:
                     value = individ.chromosome[var_name]
                     self.conv_str += '%.8f ' % (value)
                 self.conv_str += '\n'     
@@ -63,7 +64,7 @@ class Output(object):
                 for objective in self.objectives:
                     self.stats_str += '%.8f ' % (res.averages[gen][objective])
                     self.stats_str += '%.8f ' % (res.deviations[gen][objective])
-                for var_name in self.plot_ranges:
+                for var_name in self.var_ranges:
                     self.stats_str += '%.8f ' % (res.averages[gen][var_name])
                     self.stats_str += '%.8f ' % (res.deviations[gen][var_name])
                 self.stats_str += '%.1f\n' % (res.times[gen])
@@ -148,15 +149,12 @@ class Output(object):
             plt.savefig(filename)
             plt.close()
     
-
-
-
     def write_header(self):
         #convergence.log
         reportstr = 'gen '
         for objective in self.objectives:
             reportstr += '%s ' % (objective)
-        for var_name in self.plot_ranges:
+        for var_name in self.var_ranges:
             reportstr += '%s ' % (var_name)
         self.conv_log.write(reportstr+'\n')
         # statistics.log        
@@ -164,7 +162,7 @@ class Output(object):
         for objective in self.objectives:
             reportstr += 'ave_%s ' % (objective)
             reportstr += 'std_%s ' % (objective)
-        for var_name in self.plot_ranges:
+        for var_name in self.var_ranges:
             reportstr += 'ave_%s ' % (var_name)
             reportstr += 'std_%s ' % (var_name)
         reportstr += 'time\n'
