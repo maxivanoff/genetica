@@ -17,4 +17,7 @@ class Results(object):
         self.averages.append(results['averages'])
         self.times.append(results['time'])
 
+    def __add__(self, results):
+        new_results = self.__class__()
+
 
