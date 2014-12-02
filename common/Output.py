@@ -8,13 +8,13 @@ except ImportError:
     pass
 try:
     import matplotlib.pyplot as plt
-    display = True
+    graphics = True
 except:
-    display = False
+    graphics = False
 
 class Output(object):
 
-    def __init__(self, problem_name=None, objectives=None, results=None, plot_ranges=None, var_ranges=None, settings=None):
+    def __init__(self, problem_name=None, objectives=None, results=None, plot_ranges=None, var_ranges=None, settings=None, plot=True):
         self.problem_name = problem_name
         if objectives is None:
             self.objectives = []
@@ -37,6 +37,10 @@ class Output(object):
             self.dump_info(settings) # save info about GA settings
         else:
             self.main_output = None
+        if graphics and plot:
+            self.graphics = True
+        else:
+            self.graphics = False
     
     def write_logfiles(self):
         for i, res in enumerate(self.results):
@@ -81,7 +85,7 @@ class Output(object):
         self.num_solutions = len(best_individuals)
         data = self.convert_to_data(best_individuals)
         self.stats(data)
-        if display:
+        if self.graphics:
             self.correlate_pairs(data)
             self.build_histograms(data)
         self.save_data(data)
