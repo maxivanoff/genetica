@@ -15,3 +15,6 @@ Content:
 * IO.py - basic output
 * ioo.py - output with graphical representation
 * runGA.py - launches the algorithm
+
+This work was supported by the National Science Foundation (NSF) CAREER award CHE–1255641 and the Bournique Memorial Fellowship by Marquette University.
+
