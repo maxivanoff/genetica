@@ -1,4 +1,6 @@
 from results import Results
+import logging
+env_logger = logging.getLogger('genetica.Environment')
 
 class CommonEnvironment(object):
     """
@@ -7,6 +9,7 @@ class CommonEnvironment(object):
     step() defines the actual algorithm which is performed at each generation
     """
     def __init__(self, objectives=None, var_ranges=None, settings=None, Individual=None, Population=None, fitness=None):
+        env_logger.info('Creating CommonEnvironment instance')
         self.objectives = objectives
         self.num_objectives = len(objectives)
         self.var_ranges = var_ranges
@@ -30,16 +33,17 @@ class CommonEnvironment(object):
         ##self.population.assign_ranks()
         self.population.collect_statistics() # averaging
         self.save() # write data to logfiles
+
     
     def run(self):
         for i in range(self.num_cycles):
+            env_logger.info('Running %i GA cycle' % i)
             self.results.append(Results())
             self.run_cycle()
         self.fitness.close() # master sends signal to slaves that work is done
 
     def run_cycle(self):
         self.generation = 0
-        print self.generation
         self.initialize_population()
         while not self.too_many_generations():
             self.step() # single GA iteration

@@ -9,7 +9,6 @@ class SingleEnvironment(Environment.CommonEnvironment):
         Environment.CommonEnvironment.__init__(self, objectives=objectives, var_ranges=var_ranges, settings=settings, Individual=Individ, Population=Pop, fitness=fitness)
 
     def initialize_population(self):
-        print "Initialization of first population"
         self.population = self.Population(self.Individual, self.size, self.crossover_rate, self.mutation_rate, self.var_ranges, self.objectives)
         self.fitness.calculation(self.population.individuals) #fitness function calculation for 0 generation
         self.population.update()
@@ -19,7 +18,6 @@ class SingleEnvironment(Environment.CommonEnvironment):
     
     def step(self): # algorithm itself
         self.generation += 1
-        print self.generation
         self.population.evolve() # select, breed, mutate => new generation
         self.fitness.calculation(self.population.individuals) # fitness function calculation of next gen
         self.population.update()
