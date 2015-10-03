@@ -9,6 +9,7 @@ class Results(object):
         self.deviations = []
         self.averages = []
         self.times = []
+        self.individuals = []
 
     def report(self, results):
         self.best.append(results['best'])
@@ -16,6 +17,7 @@ class Results(object):
         self.deviations.append(results['deviations'])
         self.averages.append(results['averages'])
         self.times.append(results['time'])
+        self.individuals.append(results['individuals'])
 
     def __add__(self, results):
         new_results = self.__class__()

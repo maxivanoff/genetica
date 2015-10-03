@@ -11,7 +11,8 @@ class SinglePopulation(Population.CommonPopulation):
         self.individuals = sorted(self.individuals, key=lambda ind: ind.objectives[self.objective])
 
     def evolve(self):
-        next_population=self.best()
+        #next_population=self.best()
+        next_population = []
         while len(next_population) < self.size:
             mate1 = self.select(self.objective, selection_type='Proportional Selection')
             offspring = self.common_crossover(mate1, self.objective, selection_type='Proportional Selection')

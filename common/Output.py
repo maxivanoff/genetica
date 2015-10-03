@@ -72,6 +72,24 @@ class Output(object):
                     self.stats_str += '%.8f ' % (res.averages[gen][var_name])
                     self.stats_str += '%.8f ' % (res.deviations[gen][var_name])
                 self.stats_str += '%.1f\n' % (res.times[gen])
+                # report entire population from the generation
+                self.pop_log = open('%s/population_%i.log' % (output_dir, gen),'w')
+                s = ''
+                for key, value in res.individuals[0][0].chromosome.items():
+                    s += '%s ' % key
+                s += '\n'
+                for individ in res.individuals[gen]:
+                    for key, value in individ.chromosome.items():
+                        s += '%.8f ' % value
+                    s += '\n'
+                self.pop_log.write(s)
+                self.pop_log.close()
+                # correlate
+                p = '%s/%i' % (output_dir, gen)
+                if not os.path.exists(p):
+                    os.system('mkdir %s' % p)
+                data = self.convert_to_data(res.individuals[gen])
+                self.correlate_pairs(data, output_path=p)
             self.conv_log.write(self.conv_str)
             self.stats_log.write(self.stats_str)
             self.conv_log.close()
@@ -85,7 +103,7 @@ class Output(object):
         self.num_solutions = len(best_individuals)
         data = self.convert_to_data(best_individuals)
         self.stats(data)
-        if self.graphics:
+        if self.graphics and self.num_solutions > 1:
             self.correlate_pairs(data)
             self.build_histograms(data)
         self.save_data(data)
@@ -98,10 +116,10 @@ class Output(object):
         self.stats_variables(data)
         self.statsfile.close()
      
-    def correlate_pairs(self, data, plot_ranges=None, objectives=None, output=None):
+    def correlate_pairs(self, data, plot_ranges=None, objectives=None, output_path=None):
         if plot_ranges: self.plot_ranges = plot_ranges
         if objectives: self.objectives = objectives
-        if output: self.main_output = './%s/' % (output)
+        if not output_path: output_path = self.main_output
         pairs = itertools.combinations(data.keys(), 2)
         stats = {}
         for pair in pairs:
@@ -138,7 +156,7 @@ class Output(object):
                 plt.legend(loc='upper right')
                 stats['%s-%s' % (Yname, Xname)] = [a, da, b, db, R2]
             plt.plot(x, y, 'ro', ms=7.5)
-            filename = self.main_output + '/%s-%s.pdf' % (Yname, Xname)
+            filename = output_path + '/%s-%s.pdf' % (Yname, Xname)
             plt.savefig(filename)
             plt.close()
         return stats

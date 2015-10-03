@@ -1,12 +1,21 @@
 import numpy as np
 
-def quadratic(objective, chromosome):
-    x1 = chromosome['X1']
-    if objective=='objective1':
-        score = x1**2
-    if objective=='objective2':
-        score = (x1-2)**2
-    return score
+delta = 0.5
+s = 8.
+a = 0.05
+v = 0.7
+
+def two_min(individual):
+    X = individual.chromosome['x']
+    Y = individual.chromosome['y']
+    R = (a*(X-s)**2 + delta - a*X*X)**2 + 4*v*v
+    Z = (a*(X-s)**2 + delta + a*X*X - np.sqrt(R))*0.5 - 0.5*(a*s*s + delta - np.sqrt((a*s*s + delta)**2 + 4*v*v)) + 0.05*Y*Y
+    individual.objectives['Z'] = Z
+
+def quadratic(individual):
+    x1 = individual.chromosome['X1']
+    score = (x1-2)**2
+    individual.objectives['objective2'] = score
         
 
 def localglobal(objective, chromosome):
