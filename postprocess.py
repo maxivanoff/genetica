@@ -25,14 +25,10 @@ class Output(object):
         for i in xrange(self.generations):
             data = self.read_log(i)
             self.correlate_pairs(data,i)
-            if i == 0:
-                self.full_data = data.copy()
-            else:
-                self.merge_data(data)
-
-    def merge_data(self, data):
-
-
+            #if i == 0:
+            #    self.full_data = data.copy()
+            #else:
+            #    self.merge_data(data)
 
     def correlate_pairs(self, data, generation):
         pairs = itertools.combinations(data.keys(), 2)
